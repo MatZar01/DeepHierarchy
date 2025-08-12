@@ -1,0 +1,6 @@
+WN_PATH: "./WordNet_data"
+MODEL_PATH: "./Models_CSM"
+
+SAVE_DIR: "./results"
+
+SEED: 42
