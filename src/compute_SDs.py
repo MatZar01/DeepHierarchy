@@ -15,6 +15,8 @@ from .deepdepth.graph_tools import create_cluster_msts
 
 from .print_style import Style
 
+SEP = os.sep
+
 
 def wup_similarity_depth(one, other, verbose=False, simulate_root=True):
     """
@@ -163,7 +165,7 @@ def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None):
     if save_flag:
         current_time = datetime.now()
         formatted_time = current_time.strftime('%Y-%m-%d-%H-%M-%S.%f')[:-3]
-        saving_path = save_path + "\\" + formatted_time + ".png"
+        saving_path = save_path + SEP + formatted_time + ".png"
         plt.savefig(saving_path)
     plt.show()
     plt.close()
@@ -237,7 +239,7 @@ def compute_depth_values(file_path, model_name, config):
     np.random.seed(config['SEED'])
     classes = load_classes(config)
     # Open the pickle file in read-binary mode and load its contents
-    file_path_name = f'{file_path}/{model_name}/binary_matrices_after_epoch_weights_NCSM.pkl'
+    file_path_name = f'{file_path}{SEP}{model_name}{SEP}binary_matrices_after_epoch_weights_NCSM.pkl'
     similarity_matrix = read_CSM(file_path_name, CSM_index=-1)
     similarity_matrix = process_CSM(similarity_matrix, mode='NCSM')
 
@@ -254,7 +256,7 @@ def compute_depth_values(file_path, model_name, config):
 
 def compute_net_depths(config):
     model_dir = config['MODEL_PATH']
-    models = [f.path.split('/')[-1] for f in os.scandir(model_dir) if f.is_dir()]
+    models = [f.path.split(SEP)[-1] for f in os.scandir(model_dir) if f.is_dir()]
 
     for model_name in models:
         np.random.seed(42)
@@ -288,4 +290,4 @@ def compute_wn_depths(config):
 
 
 def load_classes(config):
-    return yaml.load(open(f'{config["WN_PATH"]}/wordnet_classes.yml', 'r'), Loader=yaml.Loader)
+    return yaml.load(open(f'{config["WN_PATH"]}{SEP}wordnet_classes.yml', 'r'), Loader=yaml.Loader)

@@ -1,9 +1,15 @@
+import os
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from datetime import datetime
+import os
 
 from .deepdepth.simi_clusters import partition_graph
 from .compute_SDs import compute_edge_tuples
+from .compute_SDs import load_classes
+
+SEP = os.sep
 
 
 def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custom_nodes=None):
@@ -55,7 +61,7 @@ def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custo
     if save_flag:
         current_time = datetime.now()
         formatted_time = current_time.strftime('%Y-%m-%d-%H-%M-%S.%f')[:-3]
-        saving_path = save_path + "\\" + formatted_time + ".png"
+        saving_path = save_path + SEP + formatted_time + ".png"
         plt.savefig(saving_path)
     plt.show()
     plt.close()
