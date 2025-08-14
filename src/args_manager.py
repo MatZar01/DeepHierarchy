@@ -6,6 +6,7 @@ import os
 
 SEP = os.sep
 
+
 def get_args() -> dict:
     """returns config dict for input"""
     cfg_name = 'default'
