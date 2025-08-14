@@ -1,21 +1,12 @@
 """
 @author: mromaszewski@iitis.pl, kfilus@iitis.pl
+@author: mzarski@iitis.pl -- getting this mess to actually work
 Similarity Matrix Clustering
 """
-
-import numpy as np
 from sklearn.cluster import OPTICS
 from sklearn.cluster import AffinityPropagation
 from sklearn.cluster import HDBSCAN
-from sklearn.cluster import DBSCAN
-
-import matplotlib.pyplot as plt
-import pandas as pd
-import sys
-import numpy as np
 import networkx as nx
-import community as community_louvain
-import matplotlib.pyplot as plt
 import community as community_louvain
 
 

@@ -1,16 +1,10 @@
 """
 @author: mromaszewski@iitis.pl, kfilus@iitis.pl
+@author: mzarski@iitis.pl -- getting this mess to actually work
 Similarity Matrix Clustering
 """
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import sys
 import numpy as np
 import networkx as nx
-import community as community_louvain
-import matplotlib.pyplot as plt
 
 
 def is_similarity(matrix):
@@ -21,6 +15,7 @@ def is_similarity(matrix):
     diag_vals = np.diag(matrix)
     off_diag_vals = matrix[~np.eye(matrix.shape[0], dtype=bool)]
     return diag_vals.mean().mean() >= off_diag_vals.mean().mean()
+
 
 def create_cluster_msts(G, partition):
     """
