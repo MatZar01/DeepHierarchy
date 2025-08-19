@@ -1,18 +1,22 @@
-import os
-
 import matplotlib.pyplot as plt
 import networkx as nx
 from datetime import datetime
 import os
+from nltk.corpus import wordnet as wn
+import pandas as pd
+import yaml
 
 from .deepdepth.simi_clusters import partition_graph
+from .deepdepth.reading_files import read_CSM, process_CSM
 from .compute_SDs import compute_edge_tuples
 from .compute_SDs import load_classes
+from .deepdepth.graph_tools import create_cluster_msts
+from .print_style import Style
 
 SEP = os.sep
 
 
-def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custom_nodes=None):
+def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custom_nodes=None, show=False):
     pos = nx.spring_layout(graph, weight="weight", iterations=100)
     edges, weights = zip(*nx.get_edge_attributes(graph, "weight").items())
     plt.figure(figsize=(16, 12), constrained_layout=False)
@@ -63,18 +67,12 @@ def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custo
         formatted_time = current_time.strftime('%Y-%m-%d-%H-%M-%S.%f')[:-3]
         saving_path = save_path + SEP + formatted_time + ".png"
         plt.savefig(saving_path)
-    plt.show()
+    if show:
+        plt.show()
     plt.close()
 
 
 def compute_stats(similarity_matrix, WN_ID_classes, method_id=2, save_path=None):
-    import nltk
-    from nltk.corpus import wordnet as wn
-    import pandas as pd
-    from deepdepth.graph_tools import create_cluster_msts
-    import networkx as nx
-    import community as community_louvain
-
     # Function to retrieve the names corresponding to WordNet IDs
     def get_names_from_wnids(wnids):
         names = []
@@ -109,13 +107,6 @@ def compute_stats(similarity_matrix, WN_ID_classes, method_id=2, save_path=None)
 
 
 def plot_subgraphs(similarity_matrix, WN_ID_classes, method_id=2, save_flag=False, save_path=None):
-    import nltk
-    from nltk.corpus import wordnet as wn
-    import pandas as pd
-    from deepdepth.graph_tools import create_cluster_msts
-    import networkx as nx
-    import community as community_louvain
-
     # Function to retrieve the names corresponding to WordNet IDs
     def get_names_from_wnids(wnids):
         names = []
@@ -152,3 +143,97 @@ def plot_subgraphs(similarity_matrix, WN_ID_classes, method_id=2, save_flag=Fals
                 plot_graph(subgraph, save_flag=True, save_path=save_path, custom_labels=df['depth'],
                            custom_nodes=names_list)
 
+
+def make_dirs(root_path, out, source, epoch, model):
+    path = f'.{SEP}results{SEP}{root_path}{SEP}{out}{SEP}{source}{SEP}{epoch}{SEP}{model}'
+    os.makedirs(path)
+    return path
+
+
+def get_ncsm_depths(config, dir_path):
+    print(f"\n{Style.blue('NCSM grouping:')}")
+    NCSM_depth = []
+    epoch = config['CHECK_EPOCH']
+    WN_classes = load_classes(config)
+
+    model_dir = config['MODEL_PATH']
+    models = [f.path.split(SEP)[-1] for f in os.scandir(model_dir) if f.is_dir()]
+
+    for model in models:
+        NCSM_file = f'{model_dir}{SEP}{model}{SEP}binary_matrices_after_epoch_weights_NCSM.pkl'
+        NCSM_df_save = make_dirs(dir_path, 'DF', 'NCSM', epoch, model)
+        NCSM_plot_save = make_dirs(dir_path, 'PLOTS', 'NCSM', epoch, model)
+
+        similarity_matrix = read_CSM(NCSM_file, CSM_index=epoch)
+        similarity_matrix = process_CSM(similarity_matrix, mode='NCSM')
+
+        compute_stats(similarity_matrix, WN_ID_classes=WN_classes, method_id=2, save_path=f'{NCSM_df_save}{SEP}results.csv')
+        plot_subgraphs(similarity_matrix, WN_ID_classes=WN_classes, method_id=2, save_flag=True, save_path=NCSM_plot_save)
+        sd, sims, uqs = compute_stats(similarity_matrix, WN_ID_classes=WN_classes, method_id=2)
+        NCSM_depth.append(sd)
+
+        print(f"{Style.green(model)}:\nmean depth: {Style.orange(sd)}\n"
+              f"mean similarity: {Style.orange(sims)}\n"
+              f"unique groups count: {Style.orange(uqs)}")
+
+    data = {
+        'NCSM_depth': NCSM_depth
+    }
+    return data
+
+
+def get_ccsm_depths(config, dir_path):
+    print(f"\n{Style.blue('CCSM grouping:')}")
+    CCSM_depth = []
+    epoch = config['CHECK_EPOCH']
+    WN_classes = load_classes(config)
+
+    model_dir = config['MODEL_PATH']
+    models = [f.path.split(SEP)[-1] for f in os.scandir(model_dir) if f.is_dir()]
+
+    for model in models:
+        CCSM_file = f'{model_dir}{SEP}{model}{SEP}binary_matrices_after_epoch_confusion_CCSM.pkl'
+        CCSM_df_save = make_dirs(dir_path, 'DF', 'CCSM', epoch, model)
+        CCSM_plot_save = make_dirs(dir_path, 'PLOTS', 'CCSM', epoch, model)
+
+        similarity_matrix = read_CSM(CCSM_file, CSM_index=epoch)
+        similarity_matrix = process_CSM(similarity_matrix, mode='CCSM')
+
+        compute_stats(similarity_matrix, WN_ID_classes=WN_classes, method_id=2, save_path=f'{CCSM_df_save}{SEP}results.csv')
+        plot_subgraphs(similarity_matrix, WN_ID_classes=WN_classes, method_id=2, save_flag=True, save_path=CCSM_plot_save)
+        sd, sims, uqs = compute_stats(similarity_matrix, WN_ID_classes=WN_classes, method_id=2)
+        CCSM_depth.append(sd)
+
+        print(f"{Style.green(model)}:\nmean depth: {Style.orange(sd)}\n"
+              f"mean similarity: {Style.orange(sims)}\n"
+              f"unique groups count: {Style.orange(uqs)}")
+
+    data = {
+        'CCSM_depth': CCSM_depth
+    }
+    return data
+
+
+def save_res_yml(config, dir_path, ncsm_data, ccsm_data):
+    df = pd.DataFrame(ncsm_data)
+    df['CCSM_depth'] = ccsm_data['CCSM_depth']
+
+    accs = []
+    losses = []
+    epoch = config['CHECK_EPOCH']
+
+    model_dir = config['MODEL_PATH']
+    models = [f.path.split(SEP)[-1] for f in os.scandir(model_dir) if f.is_dir()]
+
+    for model in models:
+        yml_file = f'{model_dir}{SEP}{model}{SEP}results.yml'
+        with open(yml_file, 'r') as file:
+            data = yaml.safe_load(file)
+            accs.append(data['test']['acc'][epoch])
+            losses.append(data['test']['loss'][epoch])
+            print(f"{Style.green(model)}: accuracy: {Style.orange(data['test']['acc'][epoch])} loss: {Style.orange(data['test']['loss'][epoch])}")
+
+    df["accuracy"] = accs
+    df["losses"] = losses
+
+    df.to_csv(f".{SEP}results{SEP}{dir_path}{SEP}results_epoch_{epoch}.csv", index=False)

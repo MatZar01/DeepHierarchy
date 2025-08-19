@@ -1,6 +1,5 @@
 WN_PATH: "./WordNet_data"
 MODEL_PATH: "./Models_CSM"
-
-SAVE_DIR: "./results"
+CHECK_EPOCH: 200
 
 SEED: 42
