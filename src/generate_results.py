@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from datetime import datetime
 import os
 from nltk.corpus import wordnet as wn
 import pandas as pd
@@ -16,7 +15,7 @@ from .print_style import Style
 SEP = os.sep
 
 
-def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custom_nodes=None, show=False):
+def plot_graph(graph, idx, save_flag=False, save_path=None, custom_labels=None, custom_nodes=None, show=False):
     pos = nx.spring_layout(graph, weight="weight", iterations=100)
     edges, weights = zip(*nx.get_edge_attributes(graph, "weight").items())
     plt.figure(figsize=(16, 12), constrained_layout=False)
@@ -63,9 +62,7 @@ def plot_graph(graph, save_flag=False, save_path=None, custom_labels=None, custo
     cbar.ax.tick_params(labelsize=25)
 
     if save_flag:
-        current_time = datetime.now()
-        formatted_time = current_time.strftime('%Y-%m-%d-%H-%M-%S.%f')[:-3]
-        saving_path = save_path + SEP + formatted_time + ".png"
+        saving_path = f"{save_path}{SEP}{idx}.png"
         plt.savefig(saving_path)
     if show:
         plt.show()
@@ -141,7 +138,7 @@ def plot_subgraphs(similarity_matrix, WN_ID_classes, method_id=2, save_flag=Fals
                 plot_graph(subgraph, custom_labels=df['depth'], custom_nodes=names_list)
             else:
                 plot_graph(subgraph, save_flag=True, save_path=save_path, custom_labels=df['depth'],
-                           custom_nodes=names_list)
+                           custom_nodes=names_list, idx=idx)
 
 
 def make_dirs(root_path, out, source, epoch, model):

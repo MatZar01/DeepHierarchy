@@ -2,6 +2,7 @@ from src import get_args, create_dir
 from src import Style
 from src import compute_wn_depths, compute_net_depths
 from src import get_ncsm_depths, get_ccsm_depths, save_res_yml
+from src import get_dir_compliance, get_ext_compliance, plot_dir_compliance, plot_ext_compliance
 
 
 if __name__ == "__main__":
@@ -26,3 +27,16 @@ if __name__ == "__main__":
     # save results yaml
     save_res_yml(config=config, dir_path=DIR_PATH, ncsm_data=ncsm_data, ccsm_data=ccsm_data)
 
+    # DO CHECKING COMPLIANCE
+    # compute direct compliance
+    print(f"\nChecking {Style.green('direct')} compliance")
+    dir_sims, dir_confs, df = get_dir_compliance(config=config, dir_path=DIR_PATH)
+    print(f"\nChecking {Style.green('extended')} compliance")
+    ext_sims, ext_confs = get_ext_compliance(config=config, dir_path=DIR_PATH)
+
+    # plot compliance's
+    plot_dir_compliance(config=config, dir_path=DIR_PATH, sims=dir_sims, confs=dir_confs, df=df)
+    plot_ext_compliance(config=config, dir_path=DIR_PATH, sims=ext_sims, confs=ext_confs, df=df)
+
+    # That's it
+    print(f"{Style.green('[INFO]')} DONE!")
