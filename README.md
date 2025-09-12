@@ -34,6 +34,10 @@ Or use `default.yml` and specify within:
 
 Also be sure to watch the terminal output, as it also gives out results in a straightforward way.
 
+More trained models that are compatible with our implementation can be found here:
+
+https://zenodo.org/records/14764887
+
 ## Citation
 
 If you find this work useful or use the methods, please cite our arxiv paper:
