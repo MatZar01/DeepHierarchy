@@ -1,6 +1,12 @@
-# Deep Hierarchy
+# Semantic Depth Matters: Explaining Errors of Deep Vision Networks through Perceived Class Similarities
 
---Add description here--
+**DeepHierarchy** is a repository with code that can be used to analyze deep neural networks trained for classification to see how they structure their class spaces. We use graphs to facilitate analysis. Our framework can be used for the purpose of analyzing deep neural network misclassifications by linking them to the semantic hierarchies encoded in the model. These encoded hierarchies can be extarcted with no data samples! Using the proposed **Similarity Depth (SD)** metric and **graph-based visualizations**, we showed in our paper that higher semantic depth (based on WordNet lexical tree) improves the alignment between perceived class similarities and actual errors, offering insights beyond accuracy alone. The majority of our methods do not require any images for testing! **Networks that reasonable structure the known class space --> Reliable, reasonably working and explainable neural networks!**
+
+### Check out our paper for more details!
+
+> Filus, Katarzyna, Michał Romaszewski, and Mateusz Żarski. "Semantic depth matters: Explaining errors of deep vision networks through perceived class similarities." arXiv preprint arXiv:2504.09956 (2025).
+
+![Graphical example of the results](graph_pic.png)
 
 ## Usage
 
@@ -27,3 +33,14 @@ Or use `default.yml` and specify within:
 - `MAIN_DIR/DIR_COMP` and `MAIN_DIR/EXT_COMP` for compliance graphs for both direct and extended neighborhoods.
 
 Also be sure to watch the terminal output, as it also gives out results in a straightforward way.
+
+## Citation
+
+If you find this work useful or use the methods, please cite our arxiv paper:
+
+> @article{filus2025semantic,
+  title={Semantic depth matters: Explaining errors of deep vision networks through perceived class similarities},
+  author={Filus, Katarzyna and Romaszewski, Micha{\l} and {\.Z}arski, Mateusz},
+  journal={arXiv preprint arXiv:2504.09956},
+  year={2025}
+}
