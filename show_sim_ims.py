@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src import Augmenter
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 aug_dict = {
         'CUTMIX': False,
@@ -104,23 +105,84 @@ def show_im_split(best_pt, best_sim, worst_pt, worst_sim, sample_target):
         im = cv2.resize(im, (300, 300))
         worst_ims.append(im)
 
-    print(0)
+    captions = ["Main caption", "Caption 2", "Caption 3", "Caption 4", "Caption 5"]
+
+    # Set up figure with GridSpec
+    fig = plt.figure(figsize=(10, 10))
+    gs = gridspec.GridSpec(3, 2, figure=fig, height_ratios=[1, 1, 1])
+
+    # --- Row 1 (centered image spans 2 columns) ---
+    ax1 = fig.add_subplot(gs[0, :])
+    ax1.imshow(sample_target)
+    ax1.set_title("Target Image", fontsize=14, weight="bold")
+    ax1.axis("off")
+    ax1.set_xlabel(captions[0], fontsize=10)
+
+    # --- Row 2 (two images) ---
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax2.imshow(best_ims[0])
+    ax2.set_title(f'SIM: {best_sim[0, 0]}')
+    ax2.axis("off")
+    ax2.set_xlabel(captions[1], fontsize=9)
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.imshow(best_ims[1])
+    ax3.set_title(f'SIM: {best_sim[0, 1]}')
+    ax3.axis("off")
+    ax3.set_xlabel(captions[2], fontsize=9)
+
+    # --- Row 3 (two images) ---
+    ax4 = fig.add_subplot(gs[2, 0])
+    ax4.imshow(worst_ims[0])
+    ax4.set_title(f'SIM: {worst_sim[0, 0]}')
+    ax4.axis("off")
+    ax4.set_xlabel(captions[3], fontsize=9)
+
+    ax5 = fig.add_subplot(gs[2, 1])
+    ax5.imshow(worst_ims[1])
+    ax5.set_title(f'SIM: {worst_sim[0, 1]}')
+    ax5.axis("off")
+    ax5.set_xlabel(captions[4], fontsize=9)
+
+    # First tighten layout to prevent overlaps
+    plt.tight_layout()
+
+    # Then increase space between rows (without breaking tightness)
+    plt.subplots_adjust(hspace=0.6, top=0.9)
+
+    # --- Auto place row titles ---
+    def add_row_title(fig, axes, text, **kwargs):
+        """Place a row title centered above a list of axes."""
+        boxes = [ax.get_position() for ax in axes]
+        xmid = (min(b.x0 for b in boxes) + max(b.x1 for b in boxes)) / 2
+        ytop = max(b.y1 for b in boxes)
+        fig.text(xmid, ytop + 0.02, text, ha="center", va="bottom", **kwargs)
+
+    add_row_title(fig, [ax2, ax3], "Best SIM matches", fontsize=16, weight="bold")
+    add_row_title(fig, [ax4, ax5], "Worst SIM matches", fontsize=16, weight="bold")
+
+    plt.savefig('./Models_CSM/sample/sample_output.png')
 
 model = torch.load('./Models_CSM/sample/sample_MobilenetV2.pth')
 model.eval()
 
 augmenter = Augmenter(aug_dict=aug_dict, shape=[224, 224], train=False)
 
+TARGET_ID = input('Set TARGET ID (eg. n01855672): ')
+SOURCE_ID = input('Set SOURCE ID (eg. n01532829): ')
+
 # images source for pics ids
-SOURCE_ID = 'n01532829'
+#SOURCE_ID = 'n01532829'
 # template target to get weights
-TARGET_ID = "n01855672"
-sample_target_im = get_sample_tgt(TARGET_ID)
+#TARGET_ID = "n01855672"
 
-out_sims = get_sims(model, augmenter, target_name=TARGET_ID, source_name=SOURCE_ID, sub_source=True)
-bests_pts, best_sims = get_top_bottom(out_sims, True, 2)
-worsts_pts, worsts_sims = get_top_bottom(out_sims, False, 2)
+try:
+    sample_target_im = get_sample_tgt(TARGET_ID)
 
-print('Bests:\n', bests_pts, '\nBest sims:\n', best_sims, '\nWorsts:\n', worsts_pts, '\nWorst sims:\n', worsts_sims)
+    out_sims = get_sims(model, augmenter, target_name=TARGET_ID, source_name=SOURCE_ID, sub_source=True)
+    bests_pts, best_sims = get_top_bottom(out_sims, True, 2)
+    worsts_pts, worsts_sims = get_top_bottom(out_sims, False, 2)
 
-show_im_split(bests_pts, best_sims, worsts_pts, worsts_sims, sample_target_im)
+    show_im_split(bests_pts, best_sims, worsts_pts, worsts_sims, sample_target_im)
+except:
+    print('Check your IDS, might be wrong')
