@@ -114,7 +114,7 @@ def show_im_split(best_pt, best_sim, worst_pt, worst_sim, sample_target):
     # --- Row 1 (centered image spans 2 columns) ---
     ax1 = fig.add_subplot(gs[0, :])
     ax1.imshow(sample_target)
-    ax1.set_title("Target Image", fontsize=14, weight="bold")
+    ax1.set_title("Sample target image", fontsize=14, weight="bold")
     ax1.axis("off")
     ax1.set_xlabel(captions[0], fontsize=10)
 
