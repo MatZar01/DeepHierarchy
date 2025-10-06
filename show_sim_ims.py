@@ -163,7 +163,8 @@ def show_im_split(best_pt, best_sim, worst_pt, worst_sim, sample_target):
 
     plt.savefig('./Models_CSM/sample/sample_output.png')
 
-model = torch.load('./Models_CSM/sample/sample_MobilenetV2.pth')
+MODEL_PATH = input('Set path to the model (eg. ./Models_CSM/sample/sample_MobilenetV2.pth): ')
+model = torch.load(MODEL_PATH)
 model.eval()
 
 augmenter = Augmenter(aug_dict=aug_dict, shape=[224, 224], train=False)
