@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Żarski"
+  given-names: "Mateusz"
+  orcid: "https://orcid.org/0000-0003-0380-8411"
+- family-names: "Filus"
+  given-names: "Katarzyna"
+  orcid: "https://orcid.org/0000-0003-1303-9230"
+- family-names: "Romaszewski"
+  given-names: "Michał"
+  orcid: "https://orcid.org/0000-0002-8227-929X"
+title: "DeepHierarchy"
+version: 1.0.0
+doi: 	arXiv:2504.09956
+date-released: 2025-10-06
+url: "https://github.com/MatZar01/DeepHierarchy"
