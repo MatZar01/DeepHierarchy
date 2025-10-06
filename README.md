@@ -34,6 +34,8 @@ Or use `default.yml` and specify within:
 
 Also be sure to watch the terminal output, as it also gives out results in a straightforward way.
 
+If you just want to check the most and least similar images between classes with any model, use (it's really straightforward) `show_sim_ims.py`: you'll get `sample_output.png` with images and similarities in `./Models_CSM/sample` directory.
+
 More trained models that are compatible with our implementation can be found here:
 
 https://zenodo.org/records/14764887
