@@ -83,7 +83,7 @@ def get_sims(model, augmenter, target_name, source_name, sub_source=False, ds_pa
 
 
 def get_sample_tgt(id):
-    pts = list(paths.list_images(f'/home/mateusz/Desktop/DeepHierarchy/Models_CSM/sample/sample_DS/{id}'))
+    pts = list(paths.list_images(f'./Models_CSM/sample/sample_DS/{id}'))
     pt = np.random.choice(pts, 1)
     im = cv2.imread(pt[0])
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
